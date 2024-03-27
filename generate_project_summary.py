@@ -20,9 +20,13 @@ def read_file_contents(file_path):
 def is_ignored(path, project_dir, gitignore_patterns, summaryignore_patterns, additional_ignore_patterns):
     relative_path = os.path.relpath(path, project_dir)
     for pattern in gitignore_patterns + summaryignore_patterns + additional_ignore_patterns:
-        pattern = f"*{pattern}*"
-        if fnmatch.fnmatch(relative_path, pattern) or fnmatch.fnmatch(f'{os.sep}{relative_path}', pattern):
-            return True
+        if pattern.startswith('/'):
+            if fnmatch.fnmatch(relative_path, pattern[1:]):
+                return True
+        else:
+            pattern = f"*{pattern}*"
+            if fnmatch.fnmatch(relative_path, pattern) or fnmatch.fnmatch(f'{os.sep}{relative_path}', pattern):
+                return True
     return False
 
 def generate_project_summary(project_dir):
